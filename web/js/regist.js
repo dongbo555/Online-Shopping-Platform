@@ -42,10 +42,9 @@ $(function() {
 		if(!validateEmail()) {
 			bool = false;
 		}
-		if(!validateVerifyCode()) {
-			bool = false;
+		if(!validatePhone()){
+			bool=false;
 		}
-		
 		return bool;
 	});
 });
@@ -93,7 +92,7 @@ function validateUsername() {
 		async:false,//是否异步请求，如果是异步，那么不会等服务器返回，我们这个函数就向下运行了。
 		cache:false,
 		success:function(result) {
-			if(!result) {//如果校验失败
+			if(result) {//如果校验失败
 				$("#" + id + "Error").text("用户名已被注册！");
 				showError($("#" + id + "Error"));
 				return false;
@@ -209,14 +208,14 @@ function validateEmail() {
 	 * 3. 是否注册校验
 	 */
 	$.ajax({
-		url:"/goods/UserServlet",//要请求的servlet
+		url:"/UserServlet",//要请求的servlet
 		data:{method:"ajaxValidateEmail", email:value},//给服务器的参数
 		type:"POST",
 		dataType:"json",
 		async:false,//是否异步请求，如果是异步，那么不会等服务器返回，我们这个函数就向下运行了。
 		cache:false,
 		success:function(result) {
-			if(!result) {//如果校验失败
+			if(result) {//如果校验失败
 				$("#" + id + "Error").text("Email已被注册！");
 				showError($("#" + id + "Error"));
 				return false;
@@ -224,6 +223,59 @@ function validateEmail() {
 		}
 	});
 	return true;		
+}
+
+/*
+ * Phone校验方法
+ */
+function validatePhone() {
+	var id = "phone";
+	var value = $("#" + id).val();//获取输入框内容
+	/*
+	 * 1. 非空校验
+	 */
+	if(!value) {
+		/*
+		 * 获取对应的label
+		 * 添加错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("手机号不能为空！");
+		showError($("#" + id + "Error"));
+		return false;
+	}
+	/*
+	 * 2. Email格式校验
+	 */
+	if(!/^[1][123456789][0-9]{9}$/.test(value)) {
+		/*
+		 * 获取对应的label
+		 * 添加错误信息
+		 * 显示label
+		 */
+		$("#" + id + "Error").text("错误的手机号格式！");
+		showError($("#" + id + "Error"));
+		false;
+	}
+	/*
+	 * 3. 是否注册校验
+	 */
+	$.ajax({
+		url:"/UserServlet",//要请求的servlet
+		data:{method:"ajaxValidatePhone", phone:value},//给服务器的参数
+		type:"POST",
+		dataType:"json",
+		async:false,//是否异步请求，如果是异步，那么不会等服务器返回，我们这个函数就向下运行了。
+		cache:false,
+		success:function(result) {
+			if(result) {//如果校验失败
+				$("#" + id + "Error").text("手机号已被注册！");
+				showError($("#" + id + "Error"));
+				return false;
+			}
+		}
+	});
+	return true;
 }
 
 

@@ -133,7 +133,7 @@ public class UserServlet extends BaseServlet {
      * @throws ServletException
      * @throws IOException
      */
-    public String register(HttpServletRequest req, HttpServletResponse resp)
+    public String regist(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 		/*
 		 * 1. 封装表单数据到User对象
@@ -142,7 +142,7 @@ public class UserServlet extends BaseServlet {
 		/*
 		 * 2. 校验之, 如果校验失败，保存错误信息，返回到register.jsp显示
 		 */
-        Map<String, String> errors = validateRegister(formUser, req.getSession());
+        Map<String, String> errors = validateRegist(formUser, req.getSession());
         if (errors.size() > 0) {
             req.setAttribute("form", formUser);
             req.setAttribute("errors", errors);
@@ -156,11 +156,11 @@ public class UserServlet extends BaseServlet {
 		 * 4. 保存成功信息，转发到msg.jsp显示！
 		 */
         req.setAttribute("code", "success");
-        req.setAttribute("msg", "注册功能！");
+        //req.setAttribute("msg", "注册功能！");
         return "f:/login.jsp";
     }
 
-    private Map<String, String> validateRegister(User formUser, HttpSession session) {
+    private Map<String, String> validateRegist(User formUser, HttpSession session) {
         Map<String, String> errors = new HashMap<String, String>();
 		/*
 		 * 1. 校验登录名
