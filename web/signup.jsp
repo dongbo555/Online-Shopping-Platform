@@ -19,7 +19,7 @@
     <div class="logoBar red_logo">
         <div class="comWidth">
             <div class="logo fl">
-                <a href="#"><img src="images/logo.jpg" alt="慕课网"></a>
+                <%--<a href="#"><img src="images/logo.jpg" alt="慕课网"></a>--%>
             </div>
             <h3 class="welcome_title">欢迎注册</h3>
         </div>

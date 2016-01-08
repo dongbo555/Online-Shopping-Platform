@@ -1,5 +1,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page language="java" contentType="text/html; charset=utf-8" %>
+<%@ page language="java" import="cn.shopping.dao.CategoryDao" pageEncoding="UTF-8" %>
+<%@ page import="cn.shopping.dao.GoodsDao" %>
+<%@ page import="cn.shopping.pojo.Category" %>
+<%@ page import="cn.shopping.pojo.Goods" %>
+<%@ page import="java.util.ArrayList" %>
+<%
+    String path = request.getContextPath();
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+%>
 <!doctype html>
 <html>
 <head>
@@ -17,14 +25,11 @@
 <div class="headerBar">
     <div class="topBar">
         <div class="comWidth">
-            <div class="leftArea">
-                <a href="#" class="collection">收藏慕课</a>
-            </div>
             <div class="rightArea">
                 <%-- 根据用户是否登录，显示不同的链接 --%>
                 <c:choose>
                     <c:when test="${empty sessionScope.sessionUser }">
-                        欢迎来到慕课网！<a href="/login.jsp">[登录]</a><a href="signup.jsp">[免费注册]</a>
+                        欢迎来到购物网！<a href="/login.jsp">[登录]</a><a href="signup.jsp">[免费注册]</a>
                     </c:when>
                     <c:otherwise>
                         <span>欢迎您</span>${sessionScope.sessionUser.username}&nbsp;
@@ -37,16 +42,14 @@
     </div>
     <div class="logoBar">
         <div class="comWidth">
-            <div class="logo fl">
-                <a href="#"><img src="images/logo.jpg" alt="慕课网"></a>
-            </div>
+
             <div class="search_box fl">
                 <input type="text" class="search_text fl">
                 <input type="button" value="搜 索" class="search_btn fr">
             </div>
             <div class="shopCar fr">
-                <span class="shopText fl">购物车</span>
-                <span class="shopNum fl">0</span>
+                <span class="shopText fl"><a href="/CartServlet?method=showCart">购物车</a></span>
+                <span class="shopNum fl">${size}</span>
             </div>
         </div>
     </div>
@@ -154,187 +157,80 @@
         </div>
     </div>
 </div>
-<div class="shopTit comWidth">
-    <span class="icon"></span>
-    <h3>家用电脑</h3>
-    <a href="#" class="more">更多&gt;&gt;</a>
-</div>
-<div class="shopList comWidth clearfix">
-    <div class="leftArea">
-        <div class="banner_bar banner_sm">
-            <ul class="imgBox">
-                <li><a href="#"><img src="images/banner/banner_sm_01.jpg" alt="banner"></a></li>
-                <li><a href="#"><img src="images/banner/banner_sm_02.jpg" alt="banner"></a></li>
-            </ul>
-            <div class="imgNum">
-                <a href="#" class="active"></a><a href="#"></a><a href="#"></a><a href="#"></a>
+<!-- 商品循环开始 -->
+<%
+    CategoryDao categoryDao = new CategoryDao();
+    ArrayList<Category> categories = categoryDao.getCategories();
+    ArrayList<ArrayList<Goods>> goodses = new ArrayList<ArrayList<Goods>>();
+    GoodsDao goodDao = new GoodsDao();
+    for (Category category : categories) {
+        goodses.add(goodDao.getGoodsesByCategory(category.getId() + ""));
+    }
+    request.setCharacterEncoding("utf-8");
+    request.setAttribute("categories", categories);
+    request.setAttribute("goodses", goodses);
+%>
+<c:forEach var="category" items="${categories}">
+    <div class="shopTit comWidth">
+        <span class="icon"></span>
+        <h3>${category.name}</h3>
+        <a href="#" class="more">更多&gt;&gt;</a>
+    </div>
+    <div class="shopList comWidth clearfix">
+        <div class="leftArea">
+            <div class="banner_bar banner_sm">
+                <ul class="imgBox">
+                    <li><a href="#"><img src="images/banner/banner_sm_01.jpg" alt="banner"></a></li>
+                    <li><a href="#"><img src="images/banner/banner_sm_02.jpg" alt="banner"></a></li>
+                </ul>
+                <div class="imgNum">
+                    <a href="#" class="active"></a><a href="#"></a><a href="#"></a><a href="#"></a>
+                </div>
+            </div>
+        </div>
+        <div class="rightArea">
+            <div class="shopList_top clearfix">
+                <c:forEach var="goodes" items="${goodses}">
+                    <c:if test="${goodes.get(0).cId==category.id}">
+                        <c:forEach var="goodsMap" items="${goodes}" begin="1" end="4">
+                            <div class="shop_item">
+                                <div class="shop_img">
+                                    <a href="/GoodsServlet?method=getGoodsById&id=${goodsMap.id}"><img src="images/shopImg.jpg" alt=""></a>
+                                </div>
+                                <h3>${goodsMap.name.substring(0,15)}</h3>
+                                <p>${goodsMap.price}</p>
+                            </div>
+                        </c:forEach>
+                    </c:if>
+                </c:forEach>
+            </div>
+            <div class="shopList_sm clearfix">
+
+                <c:forEach var="goodes" items="${goodses}">
+                    <c:if test="${goodes.get(0).cId==category.id}">
+                        <c:forEach var="goodsMap" items="${goodes}" begin="5" end="8">
+                            <div class="shopItem_sm">
+                                <div class="shopItem_smImg">
+                                    <a href="/GoodsServlet?method=getGoodsById&id=${goodsMap.id}"><img src="images/shopImg.jpg" alt=""></a>
+                                </div>
+                                <div class="shopItem_text">
+                                    <p>${goodsMap.name.substring(0,15)}</p>
+                                    <h3>${goodsMap.price} </h3>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </c:if>
+                </c:forEach>
             </div>
         </div>
     </div>
-    <div class="rightArea">
-        <div class="shopList_top clearfix">
-            <div class="shop_item">
-                <div class="shop_img">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <h3>HTC新渴望8系列</h3>
-                <p>1899元</p>
-            </div>
-            <div class="shop_item">
-                <div class="shop_img">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <h3>HTC新渴望8系列</h3>
-                <p>1899元</p>
-            </div>
-            <div class="shop_item">
-                <div class="shop_img">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <h3>HTC新渴望8系列</h3>
-                <p>1899元</p>
-            </div>
-            <div class="shop_item">
-                <div class="shop_img">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <h3>HTC新渴望8系列</h3>
-                <p>1899元</p>
-            </div>
-        </div>
-        <div class="shopList_sm clearfix">
-            <div class="shopItem_sm">
-                <div class="shopItem_smImg">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <div class="shopItem_text">
-                    <p>NFC技术一碰轻松配对！接触屏幕</p>
-                    <h3>￥149.00 </h3>
-                </div>
-            </div>
-            <div class="shopItem_sm">
-                <div class="shopItem_smImg">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <div class="shopItem_text">
-                    <p>NFC技术一碰轻松配对！接触屏幕</p>
-                    <h3>￥149.00 </h3>
-                </div>
-            </div>
-            <div class="shopItem_sm">
-                <div class="shopItem_smImg">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <div class="shopItem_text">
-                    <p>NFC技术一碰轻松配对！接触屏幕</p>
-                    <h3>￥149.00 </h3>
-                </div>
-            </div>
-            <div class="shopItem_sm">
-                <div class="shopItem_smImg">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <div class="shopItem_text">
-                    <p>NFC技术一碰轻松配对！接触屏幕</p>
-                    <h3>￥149.00 </h3>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="shopTit comWidth">
-    <span class="icon"></span>
-    <h3>家用电脑</h3>
-    <a href="#" class="more">更多&gt;&gt;</a>
-</div>
-<div class="shopList comWidth clearfix">
-    <div class="leftArea">
-        <div class="banner_bar banner_sm">
-            <ul class="imgBox">
-                <li><a href="#"><img src="images/banner/banner_sm_01.jpg" alt="banner"></a></li>
-                <li><a href="#"><img src="images/banner/banner_sm_02.jpg" alt="banner"></a></li>
-            </ul>
-            <div class="imgNum">
-                <a href="#" class="active"></a><a href="#"></a><a href="#"></a><a href="#"></a>
-            </div>
-        </div>
-    </div>
-    <div class="rightArea">
-        <div class="shopList_top clearfix">
-            <div class="shop_item">
-                <div class="shop_img">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <h3>HTC新渴望8系列</h3>
-                <p>1899元</p>
-            </div>
-            <div class="shop_item">
-                <div class="shop_img">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <h3>HTC新渴望8系列</h3>
-                <p>1899元</p>
-            </div>
-            <div class="shop_item">
-                <div class="shop_img">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <h3>HTC新渴望8系列</h3>
-                <p>1899元</p>
-            </div>
-            <div class="shop_item">
-                <div class="shop_img">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <h3>HTC新渴望8系列</h3>
-                <p>1899元</p>
-            </div>
-        </div>
-        <div class="shopList_sm clearfix">
-            <div class="shopItem_sm">
-                <div class="shopItem_smImg">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <div class="shopItem_text">
-                    <p>NFC技术一碰轻松配对！接触屏幕</p>
-                    <h3>￥149.00 </h3>
-                </div>
-            </div>
-            <div class="shopItem_sm">
-                <div class="shopItem_smImg">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <div class="shopItem_text">
-                    <p>NFC技术一碰轻松配对！接触屏幕</p>
-                    <h3>￥149.00 </h3>
-                </div>
-            </div>
-            <div class="shopItem_sm">
-                <div class="shopItem_smImg">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <div class="shopItem_text">
-                    <p>NFC技术一碰轻松配对！接触屏幕</p>
-                    <h3>￥149.00 </h3>
-                </div>
-            </div>
-            <div class="shopItem_sm">
-                <div class="shopItem_smImg">
-                    <a href="#"><img src="images/shopImg.jpg" alt=""></a>
-                </div>
-                <div class="shopItem_text">
-                    <p>NFC技术一碰轻松配对！接触屏幕</p>
-                    <h3>￥149.00 </h3>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+</c:forEach>
+
 <div class="hr_25"></div>
 <div class="footer">
-    <p><a href="#">慕课简介</a><i>|</i><a href="#">慕课公告</a><i>|</i> <a href="#">招纳贤士</a><i>|</i><a href="#">联系我们</a><i>|</i>客服热线：400-675-1234
+    <p><a href="#">购物网简介</a><i>|</i><a href="#">购物网公告</a><i>|</i> <a href="#">招纳贤士</a><i>|</i><a href="#">联系我们</a><i>|</i>客服热线：400-675-1234
     </p>
-    <p>Copyright &copy; 2006 - 2014 慕课版权所有&nbsp;&nbsp;&nbsp;京ICP备09037834号&nbsp;&nbsp;&nbsp;京ICP证B1034-8373号&nbsp;&nbsp;&nbsp;某市公安局XX分局备案编号：123456789123</p>
+    <p>Copyright &copy; 2006 - 2014 购物网版权所有&nbsp;&nbsp;&nbsp;京ICP备09037834号&nbsp;&nbsp;&nbsp;京ICP证B1034-8373号&nbsp;&nbsp;&nbsp;某市公安局XX分局备案编号：123456789123</p>
     <p class="web"><a href="#"><img src="images/webLogo.jpg" alt="logo"></a><a href="#"><img src="images/webLogo.jpg"
                                                                                              alt="logo"></a><a href="#"><img
             src="images/webLogo.jpg" alt="logo"></a><a href="#"><img src="images/webLogo.jpg" alt="logo"></a></p>

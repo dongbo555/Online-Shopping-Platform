@@ -30,7 +30,7 @@ public class LoginFilter implements Filter {
         if(user == null) {
             req.setAttribute("code", "error");//为了显示X图片
             req.setAttribute("msg", "您还没有登录，不能访问本资源");
-            req.getRequestDispatcher("/jsps/msg.jsp").forward(req, response);
+            req.getRequestDispatcher("/msg.jsp").forward(req, response);
         } else {
             chain.doFilter(request, response);//放行
         }

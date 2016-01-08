@@ -12,6 +12,7 @@ public class Goods {
     private String serialNum; //商品编号
     private String introduction; //商品简介
     private Date pubTime; //上架时间
+    private String cId; //商品类别
     private int id;
     public String getName() {
         return name;
@@ -53,7 +54,13 @@ public class Goods {
         this.introduction = introduction;
     }
 
+    public String getcId() {
+        return cId;
+    }
 
+    public void setcId(String cId) {
+        this.cId = cId;
+    }
 
     public Date getPubTime() {
         return pubTime;

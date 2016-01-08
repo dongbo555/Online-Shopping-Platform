@@ -20,7 +20,16 @@
 				<a href="#" class="collection">收藏慕课</a>
 			</div>
 			<div class="rightArea">
-				欢迎来到慕课网！<a href="#">[登录]</a><a href="#">[免费注册]</a>
+				<%-- 根据用户是否登录，显示不同的链接 --%>
+				<c:choose>
+					<c:when test="${empty sessionScope.sessionUser }">
+						欢迎来到慕课网！<a href="/login.jsp">[登录]</a><a href="signup.jsp">[免费注册]</a>
+					</c:when>
+					<c:otherwise>
+						<span>欢迎您</span>${sessionScope.sessionUser.username}&nbsp;
+						<a href="<c:url value='/UserServlet?method=quit'/>" target="_parent">[退出]</a>
+					</c:otherwise>
+				</c:choose>
 			</div>
 		</div>
 	</div>
